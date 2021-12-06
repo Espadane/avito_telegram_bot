@@ -1,14 +1,33 @@
 import requests
+from os import getenv
+from sys import exit
+from requests.auth import HTTPProxyAuth
 from bs4 import BeautifulSoup
 import fake_useragent
+
+
+proxy_login = getenv("PROXY_LOGIN")
+if not proxy_login:
+    exit("Error: no proxy_login provided")
+
+proxy_pass = getenv("PROXY_PASS")
+if not proxy_login:
+    exit("Error: no proxy_pass provided")
 
 def get_data_from_html(url):
     """Получение кода html по url"""
     try:
+        with open('proxies') as file:
+            proxy_base = ''.join(file.readlines()).strip().split('\n')
+        for proxy in proxy_base:
+            proxies = {'http': f'http://{proxy}',
+                'https': f'https://{proxy}',
+                }
         ua = fake_useragent.UserAgent()
         user = ua.random
         header = {'User-Agent': str(user)}
-        r = requests.get(url=url, headers=header)
+        auth = HTTPProxyAuth(proxy_login, proxy_pass)
+        r = requests.get(url=url, headers=header,proxies=proxies, auth=auth)
         print(r.status_code)
         if r.status_code == 429:
             

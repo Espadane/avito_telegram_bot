@@ -1,9 +1,8 @@
+import random
 import requests
 from os import getenv
 from sys import exit
-from requests.auth import HTTPProxyAuth
 from bs4 import BeautifulSoup
-import fake_useragent
 
 
 proxy_login = getenv("PROXY_LOGIN")
@@ -19,15 +18,25 @@ def get_data_from_html(url):
     try:
         with open('proxies') as file:
             proxy_base = ''.join(file.readlines()).strip().split('\n')
-        for proxy in proxy_base:
-            proxies = {'http': f'http://{proxy}',
-                'https': f'https://{proxy}',
-                }
-        ua = fake_useragent.UserAgent()
-        user = ua.random
-        header = {'User-Agent': str(user)}
-        auth = HTTPProxyAuth(proxy_login, proxy_pass)
-        r = requests.get(url=url, headers=header,proxies=proxies, auth=auth)
+            proxy_adr = random.choice(proxy_base)
+            proxy = {'https' : f'https://{proxy_login}:{proxy_pass}@{proxy_adr}',
+                    'http' : f'http://{proxy_login}:{proxy_pass}@{proxy_adr}'}
+        header = {
+            'accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
+            'accept-encoding':'gzip, deflate, br',
+            'accept-language':'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
+            'cache-control':'no-cache',
+            'dnt': '1',
+            'pragma': 'no-cache',
+            'sec-fetch-mode': 'navigate',
+            'sec-fetch-site': 'none',
+            'sec-fetch-user': '?1',
+            'upgrade-insecure-requests': '1',
+            'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36'}
+        try:
+            r = requests.get(url=url, headers=header,proxies=proxy)
+        except Exception as ex:
+            print(ex)
         print(r.status_code)
         if r.status_code == 429:
             

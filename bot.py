@@ -7,7 +7,6 @@ from aiogram.dispatcher.filters import Text
 from parser import *
 from avito_db import *
 
-
 bot_token = getenv("BOT_TOKEN")
 if not bot_token:
     exit("Error: no token provided")
@@ -56,7 +55,7 @@ async def add_tracked_ad(msg:types.Message):
     """Функция проверяет пришла ли ссылка с авито, если да то проверяет отслеживается ли объявления. Если нет, объявления начинают отслеживаться, если да, то удаляюются из отслеживания."""
     if 'https://www.avito.ru' or 'https://m.avito.ru' in msg.text:
         try:
-            tracked_url_title = get_requested_page_title(msg.text)
+            ads,tracked_url_title = get_data_from_html(msg.text)
             user_id = msg.from_user.id
             tracked_url = msg.text
             last_ad = get_ad_data(tracked_url)
@@ -74,7 +73,7 @@ async def add_tracked_ad(msg:types.Message):
                 await msg.answer(f'Больше не отслеживаю:\n{tracked_url_title}', disable_web_page_preview=True)
         except Exception as ex:
             print(ex)
-            await msg.answer(f'Авито нас спалил. Мы уже работаем над решением проблемы. Ваше мнение очень важно для нас')
+
     else:
         await msg.reply('Простите, хозяин :(.\n Я вас не понял.')
 
@@ -93,7 +92,7 @@ async def ads_every_minute(user_id):
         if len(ads_users_list) >= 1:
             for ads in ads_users_list:
                 ads_url = str(ads).split("'")[1]
-                tracked_url_title = get_requested_page_title(ads_url)
+                ads, tracked_url_title = get_data_from_html(ads_url)
                 old_ad = get_old_ad_from_db(user_id, tracked_url=ads_url)
                 old_ad_url = str(old_ad).split("'")[1]
                 new_ad_url = get_ad_data(ads_url)[-1]

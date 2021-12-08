@@ -64,7 +64,6 @@ async def add_tracked_ad(msg:types.Message):
             if result == 'no data':
                 await msg.answer(f'Теперь отслеживаю:\n{tracked_url_title}',disable_web_page_preview=True)
                 last_ad = build_nice_message(msg.text)
-                print(last_ad + 'asda')
                 await msg.answer(f'Последнее объявление:\n{last_ad}',disable_web_page_preview=True)
                 data = (user_id, tracked_url, last_ad_url, tracked_url_title)
                 write_url_on_db(data)

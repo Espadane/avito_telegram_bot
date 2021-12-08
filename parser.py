@@ -29,18 +29,19 @@ def get_data_from_html(url):
         check_ip(header, proxy)
     except:
         print(Fore.YELLOW + 'Не удалось подключиться к прокси, пробуем подключиться без прокси')
+        print(Style.RESET_ALL)
         r = requests.get(url=url, headers=header, timeout=2)
         check_ip(header)
-        print(r.status_code)
-        if r.status_code == 429:
+    print(r.status_code)
+    if r.status_code == 429:
 
-            return '429'
-        else:
-            soup = BeautifulSoup(r.text, 'lxml')
-            ads = soup.find_all('div', class_='iva-item-root-Nj_hb')
-            page_title = soup.title.text
-            
-            return ads, page_title
+        return '429'
+    else:
+        soup = BeautifulSoup(r.text, 'lxml')
+        ads = soup.find_all('div', class_='iva-item-root-Nj_hb')
+        page_title = soup.title.text
+        
+        return ads, page_title
 
 def check_ip(header, proxy=None):
     '''Проверка ip через который идет подключение'''

@@ -32,16 +32,12 @@ def get_data_from_html(url):
         print(Style.RESET_ALL)
         r = requests.get(url=url, headers=header, timeout=2)
         check_ip(header)
-    print(r.status_code)
-    if r.status_code == 429:
-
-        return '429'
-    else:
-        soup = BeautifulSoup(r.text, 'lxml')
-        ads = soup.find_all('div', class_='iva-item-root-Nj_hb')
-        page_title = soup.title.text
-        
-        return ads, page_title
+    print(r.status_code + '\n')
+    soup = BeautifulSoup(r.text, 'lxml')
+    ads = soup.find_all('div', class_='iva-item-root-Nj_hb')
+    page_title = soup.title.text
+    
+    return ads, page_title
 
 def check_ip(header, proxy=None):
     '''Проверка ip через который идет подключение'''
@@ -53,20 +49,17 @@ def check_ip(header, proxy=None):
     print(Fore.GREEN + "Соединение успешно установлено, ваш IP-адрес : " + ip)
     print(Style.RESET_ALL)
 
-
 def get_ad_data(url):
     """Получение данных последнего объявления"""
     ads, page_title = get_data_from_html(url)
-    if ads == '429':
-        return ads
-    else:
-        for ad in ads:
-            ad_url = 'https://avito.ru'+str(ad.find('div', class_='iva-item-titleStep-_CxvN').find('a')).split('"')[5]
-            ad_title = page_title
-            ad_price = ad.find('span', class_='price-text-E1Y7h').text.strip()
-            ad_content = str(ad.find('meta')).split('"')[1]
-            ad_location = ad.find('div', class_ = 'geo-root-H3eWU').find('span').text.strip()
 
-            ad_data = [ad_title, ad_price, ad_content, ad_location, ad_url]
+    for ad in ads:
+        ad_url = 'https://avito.ru'+str(ad.find('div', class_='iva-item-titleStep-_CxvN').find('a')).split('"')[5]
+        ad_title = page_title
+        ad_price = ad.find('span', class_='price-text-E1Y7h').text.strip()
+        ad_content = str(ad.find('meta')).split('"')[1]
+        ad_location = ad.find('div', class_ = 'geo-root-H3eWU').find('span').text.strip()
 
-            return ad_data
+        ad_data = [ad_title, ad_price, ad_content, ad_location, ad_url]
+
+        return ad_data

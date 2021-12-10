@@ -32,7 +32,7 @@ def get_data_from_html(url):
         print(Style.RESET_ALL)
         r = requests.get(url=url, headers=header, timeout=2)
         check_ip(header)
-    print(r.status_code + '\n')
+    print(r.status_code)
     soup = BeautifulSoup(r.text, 'lxml')
     ads = soup.find_all('div', class_='iva-item-root-Nj_hb')
     page_title = soup.title.text

@@ -41,10 +41,9 @@ def get_data_from_html(url):
 
 def check_ip(header, proxy=None):
     '''Проверка ip через который идет подключение'''
-    ip_cheker_url = 'https://2ip.ru/'
+    ip_cheker_url = 'https://icanhazip.com/'
     r_ip = requests.get(url=ip_cheker_url, headers=header,proxies=proxy,timeout=2)
-    soup = BeautifulSoup(r_ip.text, 'lxml')
-    ip = soup.find('div', class_='ip').find('span').text
+    ip = r_ip.text
     print('')
     print(Fore.GREEN + "Соединение успешно установлено, ваш IP-адрес : " + ip)
     print(Style.RESET_ALL)
